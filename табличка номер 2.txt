@@ -1,0 +1,579 @@
+--================================================== --              АПГРЕЙД ОТ ГОДЛИ --              ROBLOX UI
+-- LocalScript: -- StarterPlayer > StarterPlayerScripts --==================================================
+local Players = game:GetService("Players") local TweenService = game:GetService("TweenService") local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer local playerGui = player:WaitForChild("PlayerGui")
+--================================================== -- ЦВЕТА --==================================================
+local COLORS = { Background = Color3.fromRGB(25, 3, 7), DarkRed = Color3.fromRGB(75, 5, 17), Red = Color3.fromRGB(145, 15, 35), BrightRed = Color3.fromRGB(255, 35, 65),
+White = Color3.fromRGB(255, 255, 255),
+LightWhite = Color3.fromRGB(225, 225, 225),
+
+Black = Color3.fromRGB(0, 0, 0),
+}
+local NORMAL_SIZE = UDim2.new(0, 390, 0, 160)
+local TWEEN = TweenInfo.new( 0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out )
+-- Расстояние полного скина от таблички
+local FULL_AVATAR_OFFSET = 18
+--================================================== -- SCREEN GUI --==================================================
+local screenGui = Instance.new("ScreenGui") screenGui.Name = "GodlyUpgradeUI" screenGui.ResetOnSpawn = false screenGui.IgnoreGuiInset = true screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling screenGui.Parent = playerGui
+--================================================== -- ТЕНЬ --==================================================
+local shadow = Instance.new("ImageLabel") shadow.Name = "Shadow"
+shadow.Size = UDim2.new(0, 415, 0, 185) shadow.Position = UDim2.new(0.5, 0, 0.5, 7) shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+shadow.BackgroundTransparency = 1 shadow.Image = "rbxassetid://6014261993" shadow.ImageColor3 = COLORS.Black shadow.ImageTransparency = 0.45
+shadow.ScaleType = Enum.ScaleType.Slice shadow.SliceCenter = Rect.new(49, 49, 450, 450)
+shadow.ZIndex = 1 shadow.Parent = screenGui
+--================================================== -- ГЛАВНАЯ ТАБЛИЧКА --==================================================
+local main = Instance.new("Frame") main.Name = "Main"
+main.Size = NORMAL_SIZE main.Position = UDim2.new(0.5, 0, 0.5, 0) main.AnchorPoint = Vector2.new(0.5, 0.5)
+main.BackgroundColor3 = COLORS.Background main.BorderSizePixel = 0
+main.ZIndex = 2 main.Parent = screenGui
+--================================================== -- СКРУГЛЕНИЕ --==================================================
+local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 15) mainCorner.Parent = main
+--================================================== -- ПЕРЕЛИВАЮЩАЯСЯ ОБВОДКА --==================================================
+local mainStroke = Instance.new("UIStroke") mainStroke.Name = "AnimatedStroke"
+mainStroke.Color = Color3.fromRGB(110, 10, 25) mainStroke.Thickness = 1.5 mainStroke.Transparency = 0.1
+mainStroke.Parent = main
+--================================================== -- ПЕРЕЛИВАЮЩИЙСЯ ФОН --==================================================
+local gradient = Instance.new("UIGradient") gradient.Name = "AnimatedGradient"
+gradient.Color = ColorSequence.new({
+ColorSequenceKeypoint.new(
+ 0,
+ Color3.fromRGB(20, 2, 5)
+),
+
+ColorSequenceKeypoint.new(
+ 0.2,
+ Color3.fromRGB(95, 5, 20)
+),
+
+ColorSequenceKeypoint.new(
+ 0.4,
+ Color3.fromRGB(190, 20, 45)
+),
+
+ColorSequenceKeypoint.new(
+ 0.6,
+ Color3.fromRGB(120, 8, 28)
+),
+
+ColorSequenceKeypoint.new(
+ 0.8,
+ Color3.fromRGB(55, 3, 13)
+),
+
+ColorSequenceKeypoint.new(
+ 1,
+ Color3.fromRGB(20, 2, 5)
+),
+})
+gradient.Rotation = 0 gradient.Offset = Vector2.new(-1, 0)
+gradient.Parent = main
+--================================================== -- АНИМАЦИЯ ФОНА --==================================================
+task.spawn(function()
+while main.Parent do
+
+ local moveRight = TweenService:Create(
+
+  gradient,
+
+  TweenInfo.new(
+   2.5,
+   Enum.EasingStyle.Sine,
+   Enum.EasingDirection.InOut
+  ),
+
+  {
+   Offset = Vector2.new(1, 0)
+  }
+
+ )
+
+ moveRight:Play()
+ moveRight.Completed:Wait()
+
+ local moveLeft = TweenService:Create(
+
+  gradient,
+
+  TweenInfo.new(
+   2.5,
+   Enum.EasingStyle.Sine,
+   Enum.EasingDirection.InOut
+  ),
+
+  {
+   Offset = Vector2.new(-1, 0)
+  }
+
+ )
+
+ moveLeft:Play()
+ moveLeft.Completed:Wait()
+
+end
+end)
+--================================================== -- АНИМАЦИЯ ОБВОДКИ --==================================================
+task.spawn(function()
+while main.Parent do
+
+ local glowUp = TweenService:Create(
+
+  mainStroke,
+
+  TweenInfo.new(
+   1.8,
+   Enum.EasingStyle.Sine,
+   Enum.EasingDirection.InOut
+  ),
+
+  {
+   Color = COLORS.BrightRed,
+   Thickness = 2.5,
+   Transparency = 0
+  }
+
+ )
+
+ glowUp:Play()
+ glowUp.Completed:Wait()
+
+ local glowDown = TweenService:Create(
+
+  mainStroke,
+
+  TweenInfo.new(
+   1.8,
+   Enum.EasingStyle.Sine,
+   Enum.EasingDirection.InOut
+  ),
+
+  {
+   Color = Color3.fromRGB(100, 8, 22),
+   Thickness = 1.5,
+   Transparency = 0.15
+  }
+
+ )
+
+ glowDown:Play()
+ glowDown.Completed:Wait()
+
+end
+end)
+--================================================== -- ВТОРОЙ АВАТАР — ПОЛНЫЙ РОСТ --==================================================
+local fullAvatar = Instance.new("ImageLabel") fullAvatar.Name = "FullBodyAvatar"
+fullAvatar.Size = UDim2.new(0, 150, 0, 150)
+fullAvatar.Position = UDim2.new(0.5, 195 + FULL_AVATAR_OFFSET, 0.5, 0)
+fullAvatar.AnchorPoint = Vector2.new(0, 0.5)
+fullAvatar.BackgroundTransparency = 1 fullAvatar.BorderSizePixel = 0
+fullAvatar.ImageTransparency = 1
+fullAvatar.ScaleType = Enum.ScaleType.Fit
+fullAvatar.ZIndex = 3 fullAvatar.Parent = screenGui
+--================================================== -- ПОЛУЧАЕМ ПОЛНЫЙ АВАТАР --==================================================
+local fullAvatarSuccess, fullAvatarUrl = pcall(function()
+return Players:GetUserThumbnailAsync(
+ player.UserId,
+ Enum.ThumbnailType.AvatarThumbnail,
+ Enum.ThumbnailSize.Size420x420
+)
+end)
+if fullAvatarSuccess then fullAvatar.Image = fullAvatarUrl end
+--================================================== -- ЗАГОЛОВОК --==================================================
+local title = Instance.new("TextLabel") title.Name = "Title"
+title.Size = UDim2.new(1, -80, 0, 30) title.Position = UDim2.new(0.5, 0, 0, 8) title.AnchorPoint = Vector2.new(0.5, 0)
+title.BackgroundTransparency = 1
+title.Text = "АПГРЕЙД ОТ ГОДЛИ"
+title.TextColor3 = COLORS.White title.TextSize = 20 title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Center title.TextYAlignment = Enum.TextYAlignment.Center
+title.ZIndex = 5 title.Parent = main
+--================================================== -- ДЕКОРАТИВНАЯ ЛИНИЯ --==================================================
+local topLine = Instance.new("Frame") topLine.Name = "TopLine"
+topLine.Size = UDim2.new(0, 245, 0, 2) topLine.Position = UDim2.new(0.5, -122, 0, 44)
+topLine.BackgroundColor3 = COLORS.Red topLine.BorderSizePixel = 0
+topLine.ZIndex = 4 topLine.Parent = main
+local topLineCorner = Instance.new("UICorner") topLineCorner.CornerRadius = UDim.new(1, 0) topLineCorner.Parent = topLine
+--================================================== -- ПЕРВЫЙ АВАТАР — ВНУТРИ ТАБЛИЧКИ --==================================================
+local avatar = Instance.new("ImageLabel") avatar.Name = "Avatar"
+avatar.Size = UDim2.new(0, 62, 0, 62) avatar.Position = UDim2.new(0, 20, 0, 68)
+avatar.BackgroundColor3 = COLORS.DarkRed avatar.BorderSizePixel = 0
+avatar.ZIndex = 5 avatar.Parent = main
+local avatarCorner = Instance.new("UICorner") avatarCorner.CornerRadius = UDim.new(0, 13) avatarCorner.Parent = avatar
+local avatarStroke = Instance.new("UIStroke") avatarStroke.Color = COLORS.Red avatarStroke.Thickness = 2 avatarStroke.Transparency = 0.05 avatarStroke.Parent = avatar
+--================================================== -- HEADSHOT --==================================================
+local success, avatarUrl = pcall(function()
+return Players:GetUserThumbnailAsync(
+ player.UserId,
+ Enum.ThumbnailType.HeadShot,
+ Enum.ThumbnailSize.Size150x150
+)
+end)
+if success then avatar.Image = avatarUrl end
+--================================================== -- DISPLAY NAME --==================================================
+local username = Instance.new("TextLabel") username.Name = "Username"
+username.Size = UDim2.new(0, 210, 0, 32) username.Position = UDim2.new(0, 88, 0, 68)
+username.BackgroundTransparency = 1
+username.Text = player.DisplayName
+username.TextColor3 = COLORS.White username.TextSize = 23 username.Font = Enum.Font.GothamBold
+username.TextXAlignment = Enum.TextXAlignment.Left username.TextYAlignment = Enum.TextYAlignment.Center
+username.TextTruncate = Enum.TextTruncate.AtEnd
+username.ZIndex = 5 username.Parent = main
+--================================================== -- НАСТОЯЩИЙ ROBLOX USERNAME --==================================================
+local accountName = Instance.new("TextLabel") accountName.Name = "AccountName"
+accountName.Size = UDim2.new(0, 210, 0, 18) accountName.Position = UDim2.new(0, 88, 0, 96)
+accountName.BackgroundTransparency = 1
+accountName.Text = "@" .. player.Name
+accountName.TextColor3 = COLORS.LightWhite accountName.TextTransparency = 0.25 accountName.TextSize = 11 accountName.Font = Enum.Font.Gotham
+accountName.TextXAlignment = Enum.TextXAlignment.Left accountName.TextYAlignment = Enum.TextYAlignment.Center
+accountName.ZIndex = 5 accountName.Parent = main
+--================================================== -- ЗАМОЧЕК --==================================================
+local lockButton = Instance.new("TextButton") lockButton.Name = "LockButton"
+lockButton.Size = UDim2.new(0, 34, 0, 34)
+lockButton.Position = UDim2.new(1, -10, 0, 10) lockButton.AnchorPoint = Vector2.new(1, 0)
+lockButton.BackgroundColor3 = COLORS.DarkRed lockButton.BorderSizePixel = 0
+lockButton.Text = "🔒" lockButton.TextSize = 17 lockButton.Font = Enum.Font.GothamBold
+lockButton.AutoButtonColor = false
+lockButton.ZIndex = 10 lockButton.Parent = main
+local lockCorner = Instance.new("UICorner") lockCorner.CornerRadius = UDim.new(0, 9) lockCorner.Parent = lockButton
+local lockStroke = Instance.new("UIStroke") lockStroke.Color = COLORS.Red lockStroke.Thickness = 1.5 lockStroke.Parent = lockButton
+--================================================== -- СОСТОЯНИЕ ЗАМКА --==================================================
+local locked = true
+--================================================== -- ПЕРЕТАСКИВАНИЕ --==================================================
+local dragging = false local dragStart = nil local startPosition = nil local dragInput = nil
+local function updateDrag(input)
+if not dragging then
+ return
+end
+
+if locked then
+ return
+end
+
+local delta = input.Position - dragStart
+
+-- Новая позиция таблички
+main.Position = UDim2.new(
+ startPosition.X.Scale,
+ startPosition.X.Offset + delta.X,
+
+ startPosition.Y.Scale,
+ startPosition.Y.Offset + delta.Y
+)
+
+-- Двигаем тень
+shadow.Position = UDim2.new(
+ main.Position.X.Scale,
+ main.Position.X.Offset,
+
+ main.Position.Y.Scale,
+ main.Position.Y.Offset + 7
+)
+
+-- Двигаем полный скин вместе с табличкой
+fullAvatar.Position = UDim2.new(
+ main.Position.X.Scale,
+ main.Position.X.Offset + 195 + FULL_AVATAR_OFFSET,
+
+ main.Position.Y.Scale,
+ main.Position.Y.Offset
+)
+end
+--================================================== -- НАЧАЛО ПЕРЕТАСКИВАНИЯ --==================================================
+main.InputBegan:Connect(function(input)
+if locked then
+ return
+end
+
+if input.UserInputType == Enum.UserInputType.MouseButton1
+ or input.UserInputType == Enum.UserInputType.Touch then
+
+ dragging = true
+
+ dragStart = input.Position
+ startPosition = main.Position
+
+ input.Changed:Connect(function()
+
+  if input.UserInputState == Enum.UserInputState.End then
+   dragging = false
+  end
+
+ end)
+
+end
+end)
+--================================================== -- ОТСЛЕЖИВАНИЕ ДВИЖЕНИЯ --==================================================
+main.InputChanged:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseMovement
+ or input.UserInputType == Enum.UserInputType.Touch then
+
+ dragInput = input
+
+end
+end)
+UserInputService.InputChanged:Connect(function(input)
+if input == dragInput then
+ updateDrag(input)
+end
+end)
+--================================================== -- НАВЕДЕНИЕ НА ЗАМОЧЕК --==================================================
+lockButton.MouseEnter:Connect(function()
+TweenService:Create(
+ lockButton,
+
+ TWEEN,
+
+ {
+  BackgroundColor3 = COLORS.Red
+ }
+
+):Play()
+end)
+lockButton.MouseLeave:Connect(function()
+TweenService:Create(
+ lockButton,
+
+ TWEEN,
+
+ {
+  BackgroundColor3 = COLORS.DarkRed
+ }
+
+):Play()
+end)
+--================================================== -- НАЖАТИЕ НА ЗАМОЧЕК --==================================================
+lockButton.Activated:Connect(function()
+locked = not locked
+
+if locked then
+
+ lockButton.Text = "🔒"
+
+ TweenService:Create(
+  lockButton,
+
+  TWEEN,
+
+  {
+   BackgroundColor3 = COLORS.Red
+  }
+
+ ):Play()
+
+else
+
+ lockButton.Text = "🔓"
+
+ TweenService:Create(
+  lockButton,
+
+  TWEEN,
+
+  {
+   BackgroundColor3 = COLORS.DarkRed
+  }
+
+ ):Play()
+
+end
+end)
+
+--================================================== -- АВТОМАТИЧЕСКАЯ СМЕНА ТЕКСТА ЧЕРЕЗ 10 МИНУТ --==================================================
+task.delay(600, function()
+	if not main or not main.Parent then
+		return
+	end
+
+	-- Убираем шестерёнку и закрываем настройки
+	if settingsButton and settingsButton.Parent then
+		settingsButton:Destroy()
+	end
+	if settings and settings.Parent then
+		settings.Visible = false
+	end
+
+	-- Меняем текст на табличке
+	title.Text = "SAY DILDO!"
+	username.Text = "ДИЛДО"
+	accountName.Text = "ДИЛДО"
+end)
+
+--================================================== -- АНИМАЦИЯ ПОЯВЛЕНИЯ --==================================================
+main.Size = UDim2.new(0, 350, 0, 130) main.BackgroundTransparency = 1
+title.TextTransparency = 1 topLine.BackgroundTransparency = 1
+username.TextTransparency = 1 accountName.TextTransparency = 1
+avatar.ImageTransparency = 1
+lockButton.BackgroundTransparency = 1 lockButton.TextTransparency = 1
+
+--==================================================
+-- НАСТРОЙКИ: ШЕСТЕРЁНКА И ОФОРМЛЕНИЕ
+--==================================================
+local settingsButton = Instance.new("TextButton")
+settingsButton.Name = "SettingsButton"
+settingsButton.Size = UDim2.new(0, 34, 0, 34)
+settingsButton.Position = UDim2.new(0, 10, 0, 10)
+settingsButton.BackgroundColor3 = COLORS.DarkRed
+settingsButton.BorderSizePixel = 0
+settingsButton.Text = "⚙"
+settingsButton.TextColor3 = COLORS.White
+settingsButton.TextSize = 20
+settingsButton.Font = Enum.Font.GothamBold
+settingsButton.AutoButtonColor = false
+settingsButton.ZIndex = 15
+settingsButton.Parent = main
+local sc = Instance.new("UICorner"); sc.CornerRadius = UDim.new(0,9); sc.Parent = settingsButton
+local ss = Instance.new("UIStroke"); ss.Color = COLORS.Red; ss.Thickness = 1.5; ss.Parent = settingsButton
+
+local settings = Instance.new("Frame")
+settings.Name = "Settings"
+settings.Size = UDim2.new(0, 300, 0, 260)
+settings.Position = UDim2.new(0.5, 0, 0.5, 0)
+settings.AnchorPoint = Vector2.new(0.5,0.5)
+settings.BackgroundColor3 = Color3.fromRGB(18,18,24)
+settings.BorderSizePixel = 0
+settings.Visible = false
+settings.ZIndex = 30
+settings.Parent = screenGui
+local scc = Instance.new("UICorner"); scc.CornerRadius = UDim.new(0,14); scc.Parent = settings
+local sss = Instance.new("UIStroke"); sss.Color = COLORS.Red; sss.Thickness = 2; sss.Parent = settings
+
+local st = Instance.new("TextLabel")
+st.Size = UDim2.new(1,-55,0,32); st.Position = UDim2.new(0,15,0,10)
+st.BackgroundTransparency = 1; st.Text = "⚙ НАСТРОЙКИ"; st.TextColor3 = COLORS.White
+st.TextSize = 17; st.Font = Enum.Font.GothamBold; st.TextXAlignment = Enum.TextXAlignment.Left
+st.ZIndex = 31; st.Parent = settings
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0,30,0,30); close.Position = UDim2.new(1,-10,0,10); close.AnchorPoint = Vector2.new(1,0)
+close.BackgroundColor3 = COLORS.DarkRed; close.BorderSizePixel = 0; close.Text = "×"
+close.TextColor3 = COLORS.White; close.TextSize = 22; close.ZIndex = 31; close.Parent = settings
+local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0,8); cc.Parent = close
+
+local caption = Instance.new("TextLabel")
+caption.Size = UDim2.new(0,90,0,28); caption.Position = UDim2.new(0,15,0,52)
+caption.BackgroundTransparency = 1; caption.Text = "Надпись:"; caption.TextColor3 = COLORS.LightWhite
+caption.TextSize = 13; caption.Font = Enum.Font.Gotham; caption.TextXAlignment = Enum.TextXAlignment.Left
+caption.ZIndex = 31; caption.Parent = settings
+
+local titleBox = Instance.new("TextBox")
+titleBox.Size = UDim2.new(0,175,0,30); titleBox.Position = UDim2.new(0,110,0,50)
+titleBox.BackgroundColor3 = Color3.fromRGB(30,30,38); titleBox.BorderSizePixel = 0
+titleBox.Text = title.Text; titleBox.TextColor3 = COLORS.White; titleBox.TextSize = 13
+titleBox.Font = Enum.Font.Gotham; titleBox.ClearTextOnFocus = false; titleBox.ZIndex = 31; titleBox.Parent = settings
+local tbc = Instance.new("UICorner"); tbc.CornerRadius = UDim.new(0,8); tbc.Parent = titleBox
+
+local bgText = Instance.new("TextLabel")
+bgText.Size = UDim2.new(0,90,0,25); bgText.Position = UDim2.new(0,15,0,88)
+bgText.BackgroundTransparency = 1; bgText.Text = "Цвет фона:"; bgText.TextColor3 = COLORS.LightWhite
+bgText.TextSize = 13; bgText.Font = Enum.Font.Gotham; bgText.TextXAlignment = Enum.TextXAlignment.Left
+bgText.ZIndex = 31; bgText.Parent = settings
+
+local bgColors = {
+ {"Красный",Color3.fromRGB(120,5,20)}, {"Синий",Color3.fromRGB(8,35,120)},
+ {"Фиолетовый",Color3.fromRGB(65,15,120)}, {"Зелёный",Color3.fromRGB(10,90,55)},
+ {"Чёрный",Color3.fromRGB(12,12,15)}, {"Золотой",Color3.fromRGB(105,65,8)}
+}
+local selectedBg = COLORS.Background
+for i,d in ipairs(bgColors) do
+ local b = Instance.new("TextButton")
+ b.Size=UDim2.new(0,82,0,28)
+ local row=math.floor((i-1)/3); local col=(i-1)%3
+ b.Position=UDim2.new(0,15+col*92,0,113+row*34)
+ b.BackgroundColor3=d[2]; b.BorderSizePixel=0; b.Text=d[1]; b.TextColor3=COLORS.White
+ b.TextSize=10; b.Font=Enum.Font.GothamBold; b.AutoButtonColor=false; b.ZIndex=31; b.Parent=settings
+ local bc=Instance.new("UICorner"); bc.CornerRadius=UDim.new(0,7); bc.Parent=b
+ b.Activated:Connect(function()
+  selectedBg=d[2]; gradient.Enabled=false; main.BackgroundColor3=selectedBg
+ end)
+end
+
+local grad = Instance.new("TextButton")
+grad.Size=UDim2.new(0,125,0,30); grad.Position=UDim2.new(0,15,0,188)
+grad.BackgroundColor3=COLORS.Red; grad.BorderSizePixel=0; grad.Text="✨ Градиент: ВКЛ"
+grad.TextColor3=COLORS.White; grad.TextSize=11; grad.Font=Enum.Font.GothamBold
+grad.AutoButtonColor=false; grad.ZIndex=31; grad.Parent=settings
+local gc=Instance.new("UICorner"); gc.CornerRadius=UDim.new(0,8); gc.Parent=grad
+
+local border = Instance.new("TextButton")
+border.Size=UDim2.new(0,125,0,30); border.Position=UDim2.new(0,150,0,188)
+border.BackgroundColor3=COLORS.DarkRed; border.BorderSizePixel=0; border.Text="Обводка: КРАСНАЯ"
+border.TextColor3=COLORS.White; border.TextSize=10; border.Font=Enum.Font.GothamBold
+border.AutoButtonColor=false; border.ZIndex=31; border.Parent=settings
+local brc=Instance.new("UICorner"); brc.CornerRadius=UDim.new(0,8); brc.Parent=border
+
+local apply=Instance.new("TextButton")
+apply.Size=UDim2.new(1,-30,0,30); apply.Position=UDim2.new(0,15,1,-42)
+apply.BackgroundColor3=COLORS.Red; apply.BorderSizePixel=0; apply.Text="✓ Применить"
+apply.TextColor3=COLORS.White; apply.TextSize=12; apply.Font=Enum.Font.GothamBold
+apply.AutoButtonColor=false; apply.ZIndex=31; apply.Parent=settings
+local ac=Instance.new("UICorner"); ac.CornerRadius=UDim.new(0,8); ac.Parent=apply
+
+local gradientOn=true
+local borders={{"КРАСНАЯ",COLORS.Red},{"БЕЛАЯ",COLORS.White},{"ЗОЛОТАЯ",Color3.fromRGB(255,190,55)},{"ФИОЛЕТОВАЯ",Color3.fromRGB(180,70,255)},{"СИНЯЯ",Color3.fromRGB(65,130,255)}}
+local borderIndex=1
+grad.Activated:Connect(function()
+ gradientOn=not gradientOn; gradient.Enabled=gradientOn
+ grad.Text=gradientOn and "✨ Градиент: ВКЛ" or "✨ Градиент: ВЫКЛ"
+ if not gradientOn then main.BackgroundColor3=selectedBg end
+end)
+border.Activated:Connect(function()
+ borderIndex=borderIndex%#borders+1; border.Text="Обводка: "..borders[borderIndex][1]; mainStroke.Color=borders[borderIndex][2]
+end)
+titleBox.FocusLost:Connect(function() if titleBox.Text~="" then title.Text=titleBox.Text end end)
+local settingsOpen=false
+local function toggleSettings()
+ settingsOpen=not settingsOpen; settings.Visible=settingsOpen
+ if settingsOpen then settings.Size=UDim2.new(0,270,0,235); TweenService:Create(settings,TWEEN,{Size=UDim2.new(0,300,0,260)}):Play() end
+end
+settingsButton.MouseEnter:Connect(function() TweenService:Create(settingsButton,TWEEN,{BackgroundColor3=COLORS.Red,Rotation=45}):Play() end)
+settingsButton.MouseLeave:Connect(function() TweenService:Create(settingsButton,TWEEN,{BackgroundColor3=COLORS.DarkRed,Rotation=0}):Play() end)
+settingsButton.Activated:Connect(toggleSettings)
+close.Activated:Connect(function() settingsOpen=false; settings.Visible=false end)
+apply.Activated:Connect(function()
+ if titleBox.Text~="" then title.Text=titleBox.Text end
+ settingsOpen=false; settings.Visible=false
+end)
+
+settingsButton.BackgroundTransparency = 1 settingsButton.TextTransparency = 1
+task.wait(0.1)
+--================================================== -- ПОЯВЛЕНИЕ ТАБЛИЧКИ --==================================================
+TweenService:Create(
+main,
+
+TweenInfo.new(
+ 0.45,
+ Enum.EasingStyle.Back,
+ Enum.EasingDirection.Out
+),
+
+{
+ Size = NORMAL_SIZE,
+ BackgroundTransparency = 0
+}
+):Play()
+--================================================== -- ПОЯВЛЕНИЕ ПОЛНОГО СКИНА --==================================================
+TweenService:Create(
+fullAvatar,
+
+TweenInfo.new(
+ 0.6,
+ Enum.EasingStyle.Quad,
+ Enum.EasingDirection.Out
+),
+
+{
+ ImageTransparency = 0
+}
+):Play()
+--================================================== -- ЗАГОЛОВОК --==================================================
+TweenService:Create( title, TWEEN, { TextTransparency = 0 } ):Play()
+--================================================== -- ЛИНИЯ --==================================================
+TweenService:Create( topLine, TWEEN, { BackgroundTransparency = 0 } ):Play()
+--================================================== -- DISPLAY NAME --==================================================
+TweenService:Create( username, TWEEN, { TextTransparency = 0 } ):Play()
+--================================================== -- USERNAME --==================================================
+TweenService:Create( accountName, TWEEN, { TextTransparency = 0 } ):Play()
+--================================================== -- ПЕРВЫЙ АВАТАР --==================================================
+TweenService:Create( avatar, TWEEN, { ImageTransparency = 0 } ):Play()
+--================================================== -- ЗАМОЧЕК --==================================================
+TweenService:Create( lockButton, TWEEN, { BackgroundTransparency = 0, TextTransparency = 0 } ):Play()
+TweenService:Create( settingsButton, TWEEN, { BackgroundTransparency = 0, TextTransparency = 0 } ):Play()
+TweenService:Create( settingsButton, TWEEN, { BackgroundTransparency = 0, TextTransparency = 0 } ):Play()
